@@ -1,0 +1,24 @@
+\documentclass[12pt, hidelinks, oneside]{ctexbook}
+\usepackage{graphicx}
+\usepackage{makeidx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{amsmath}
+\renewcommand{\thesection}{}
+\makeindex
+\bibliographystyle{plain}
+\pagestyle{plain}
+\setlength{\topmargin}{-0.8in}
+\setlength{\oddsidemargin}{-0.2in}
+\setlength{\textwidth}{7in}
+\setlength{\textheight}{9.4in}
+\lstset{breaklines=true}
+\begin{document}
+\tableofcontents
+\frontmatter
+\input{preface}
+\mainmatter
+\input{hash.tex}
+
+\end{document}
