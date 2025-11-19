@@ -1,0 +1,85 @@
+\part{滑动窗口}
+
+\section{无重复字符的最长子串}
+
+\textbf{题目描述：}
+给定一个字符串 s ，请你找出其中不含有重复字符的 最长 子串 的长度。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const lengthOfLongestSubstring = (s) => {
+        let map = new Map();
+        let max = 0;
+        let start = 0;
+        for (let i = 0; i < s.length; i++) {
+            let char = s[i];
+            if (map.has(char)) {
+                // Keep the start index to the right of the last seen index eg. 'abba'
+                start = Math.max(start, map.get(char) + 1);
+            }
+            map.set(char, i);
+            max = Math.max(max, i - start + 1);
+        }
+    
+        return max;
+    }
+\end{lstlisting}
+
+\textbf{解法二：}
+\begin{lstlisting}
+    const lengthOfLongestSubstring2 = (s) => {
+        const charSet = new Set();
+        let rightIndex = -1;
+        let result = 0;
+    
+        // i is the left bound;
+        for (let i = 0; i < s.length; i++) {
+            if (i != 0) {
+                charSet.delete(s[i - 1]);
+            }
+            // rightIndex is the right bound
+            while(rightIndex + 1 < s.length && !charSet.has(s[rightIndex+1])) {
+                charSet.add(s[rightIndex+1]);
+                rightIndex++;
+            }
+            result = Math.max(result, rightIndex - i + 1);
+        }
+    
+        return result;
+    }
+\end{lstlisting}
+
+\section{找到字符串中所有字母异位词}
+\textbf{题目描述：}
+
+给定两个字符串 s 和 p，找到 s 中所有 p 的 异位词 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const findAnagrams = (s, p) => {
+        const patternCharCount = new Array(26).fill(0);
+        const strCharCount = new Array(26).fill(0);
+        const result = [];
+        if (s.length < p.length) {
+            return result;
+        }
+        for( let i = 0; i < p.length; i++) {
+            patternCharCount[p[i].charCodeAt() - 'a'.charCodeAt()] ++;
+            strCharCount[s[i].charCodeAt() - 'a'.charCodeAt()] ++;
+        }
+        if (patternCharCount.toString() === strCharCount.toString()) {
+            result.push(0)
+        }
+
+        for(let i = 0; i < s.length - p.length ; i++) {
+            strCharCount[s[i].charCodeAt() - 'a'.charCodeAt()]--;
+            strCharCount[s[i + p.length].charCodeAt() - 'a'.charCodeAt()]++;
+            
+            if (strCharCount.toString() === patternCharCount.toString()) {
+                result.push(i + 1)
+            }
+        }
+        
+        return result;
+    };
+\end{lstlisting}
