@@ -1,0 +1,139 @@
+\part{子串}
+
+\section{和为 K 的子数组}
+
+\textbf{题目描述：}
+
+给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的子数组的个数 。
+
+子数组是数组中元素的连续非空序列。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+const subarraySum = (nums, k) => {
+    let count = 0;
+    for (let i = 0; i < nums.length; i++) {
+        let sum = 0;
+        for (let j = i; j >= 0; j--) {
+            sum += nums[j];
+            if (sum == k) {
+                count ++;
+            }
+        }
+    }
+
+    return count;
+};
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+const subarraySum2 = (nums, k) => {
+    let count = 0;
+    let sum = 0;
+    const map = new Map();
+    map.set(0, 1);
+    
+    for (let i = 0; i < nums.length; i++) {
+        sum += nums[i];
+        
+        if (map.has(sum - k)) {
+            count += map.get(sum - k);
+        }
+        
+        map.set(sum, (map.get(sum) || 0) + 1);
+    }
+    
+    return count;
+};
+\end{lstlisting}
+
+\section{滑动窗口最大值}
+
+\textbf{题目描述：}
+
+给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+
+返回 滑动窗口中的最大值 。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+const maxSlidingWindow = (nums, k) => {
+    let result = [];
+    const queue = [];
+    
+    for (let i = 0; i < nums.length; i++) {
+        while (queue.length && nums[i] >= nums[queue[queue.length -1]]) {
+            queue.pop();
+        }
+        queue.push(i);
+
+        if (queue[0] <= i - k) {
+            queue.shift();
+        }
+
+        if (i >= k -1) {
+            result.push(nums[queue[0]])
+        }
+    }
+    return result;    
+};
+\end{lstlisting}
+
+\section{最小覆盖子串}
+
+\textbf{题目描述：}
+
+给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+
+ 
+
+注意：
+
+对于 t 中重复字符，我们寻找的子字符串中该字符数量必须不少于 t 中该字符数量。
+如果 s 中存在这样的子串，我们保证它是唯一的答案。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+const minWindow = (s, t) => {
+    if (s.length === 0 || t.length === 0) {
+        return "";
+    }
+    const referMap = new Map();
+    const windowMap = new Map();
+    let left = 0, right = 0, start = 0, formed = 0,minLength = Infinity; 
+
+    for (let char of t) {
+        referMap.set(char, (referMap.get(char) || 0) + 1);
+    }
+
+    while (right < s.length) {
+        let char = s[right];
+        windowMap.set(char, (windowMap.get(char) || 0) + 1);
+        if (referMap.has(char) && referMap.get(char) === windowMap.get(char)) {
+            formed++
+        }
+
+        while(formed === referMap.size) {
+            if (right - left + 1< minLength) {
+                start = left;
+                minLength = right - left + 1;
+            }
+            const leftChar = s[left];
+            if (windowMap.get(leftChar) === referMap.get(leftChar)) {
+                formed--
+            }
+            windowMap.set(leftChar, windowMap.get(leftChar) - 1);
+            left++;
+        }
+
+        right++;
+    }
+
+    return minLength === Infinity ? "" : s.substring(start, start + minLength);
+};
+\end{lstlisting}
