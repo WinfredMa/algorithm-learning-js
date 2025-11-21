@@ -20,3 +20,128 @@ const maxSubArray = (nums) => {
     return max;
 };
 \end{lstlisting}
+
+\section{合并区间}
+
+\textbf{题目描述：}
+
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间 。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const merge = (intervals) => {
+        intervals.sort((a, b) => a[0] - b[0]);
+        const result = [intervals[0]];
+    
+        for(let i = 1; i < intervals.length; i++) {
+            const latestItem = result.pop();
+    
+            if (intervals[i][0] <= latestItem[1]) {
+                let left = latestItem[0];
+                let right = Math.max(intervals[i][1], latestItem[1]);
+                result.push([left, right]);
+            } else {
+                result.push(latestItem);
+                result.push(intervals[i]);
+            }
+        }
+    
+        return result
+    };
+\end{lstlisting}
+
+\section{轮转数组}
+
+\textbf{题目描述：}
+
+给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const rotate = (nums, k) => {
+        k = k % nums.length;
+        const lastK = nums.splice(nums.length - k, k);
+        nums.unshift(...lastK);
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+    const reverse = (nums, left, right) => {
+        while (left < right) {
+            [nums[left], nums[right]] = [nums[right], nums[left]];
+            left++;
+            right--;
+        }
+    }
+    
+    const rotate = (nums, k) => {
+        k = k % nums.length;
+        reverse(nums, 0, nums.length - 1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.length - 1);
+    };
+\end{lstlisting}
+
+\section{除自身以外数组的乘积}
+\textbf{题目描述：}
+
+给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。
+
+题目数据 保证 数组 nums之中任意元素的全部前缀元素和后缀的乘积都在  32 位 整数范围内。
+
+请 不要使用除法，且在 O(n) 时间复杂度内完成此题。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const productExceptSelf = (nums) => {
+        let result = [1];
+        let n = nums.length;
+        for (let i = 1; i < n; i++) {
+            result[i] = result[i - 1] * nums[i - 1];
+        }
+        let rightProduct = 1;
+    
+        for (let i = n - 1; i >=0; i--) {
+            result[i] = result[i] * rightProduct;
+            rightProduct *= nums[i];
+        }
+    
+        return result
+    };
+\end{lstlisting}
+
+\section{缺失的第一个正数}
+
+\textbf{题目描述：}
+
+给你一个未排序的整数数组 nums ，请你找出其中没有出现的最小的正整数。
+
+请你实现时间复杂度为 O(n) 并且只使用常数级别额外空间的解决方案。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const firstMissingPositive = (nums) => {
+        let n = nums.length;
+    
+        for (let i = 0; i < n; i++) {
+            while (nums[i] > 0 && nums[i] <= n && nums[nums[i] -1] != nums[i]) {
+                let temp = nums[nums[i] -1];
+                nums[nums[i] -1] = nums[i];
+                nums[i] = temp;
+            }
+        }
+    
+        for (let j = 0; j < n; j++) {
+            if (nums[j] !== j + 1) {
+                return j+1
+            }
+        }
+        return n + 1
+    };
+\end{lstlisting}
