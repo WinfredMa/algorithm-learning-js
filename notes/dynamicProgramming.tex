@@ -228,3 +228,169 @@ const numSquares = (n) => {
         return dp[amount] === Infinity ? -1 : dp[amount];
     };
 \end{lstlisting}
+
+\section{单词拆分}
+\textbf{题目描述：}
+
+给你一个字符串 s 和一个字符串列表 wordDict 作为字典。如果可以利用字典中出现的一个或多个单词拼接出 s 则返回 true。
+
+注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const wordBreak = (s, wordDict) => {
+        const dictSet = new Set(wordDict);
+        const dp = new Array(s.length + 1).fill(false);
+        dp[0] = true;
+    
+        for (let i = 1; i <= s.length; i++) {
+            for (let j = 0; j < i; j++) {
+                if (dp[j] && dictSet.has(s.slice(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        
+        return dp[s.length];
+    };
+\end{lstlisting}
+
+\section{最长递增子序列}
+\textbf{题目描述：}
+
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const lengthOfLIS = (nums) => {
+        const n = nums.length;
+        let result = 1;
+        const dp = new Array(n).fill(1);
+
+        for (let i = 1; i < n; i++) {
+            for (let j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            result = Math.max(dp[i], result);
+        }
+        
+        return result
+    };
+\end{lstlisting}
+
+\section{乘积最大子数组}
+\textbf{题目描述：}
+
+给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续 子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+测试用例的答案是一个 32-位 整数。
+
+请注意，一个只包含一个元素的数组的乘积是这个元素的值。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const maxProduct = (nums) => {
+        let maxSofar = nums[0], minSofar = nums[0], result = nums[0];
+
+        for (let i = 1; i < nums.length; i++) {
+            let temp = maxSofar;
+            maxSofar = Math.max(nums[i], maxSofar * nums[i], minSofar * nums[i]);
+            minSofar = Math.min(nums[i], temp * nums[i], minSofar * nums[i]);
+
+            result = Math.max(maxSofar, result);
+        }
+
+        return result;
+    };
+\end{lstlisting}
+
+\section{分割等和子集}
+\textbf{题目描述：}
+
+给你一个 只包含正整数 的 非空 数组 nums 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const canPartition = (nums) => {
+        let sum = 0, maxNum = 0;
+        
+        for (let num of nums) {
+            sum += num;
+            maxNum = Math.max(maxNum, num);
+        }
+        const targetVal = sum / 2;
+        if (sum % 2 !== 0 || maxNum > targetVal) {
+            return false;
+        }
+        
+        const dp = new Array(targetVal + 1).fill(false);
+        dp[0] = true;
+    
+        for (let i = 0; i < nums.length; i++) {
+            for (let j = targetVal; j >= nums[i]; j--) {
+                if (dp[j - nums[i]]) {
+                    dp[j] = true;
+                }
+            }
+            if (dp[targetVal]) {
+                return true;
+            }
+        }
+    
+        return dp[targetVal]
+    };
+\end{lstlisting}
+
+\section{最长有效括号}
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const longestValidParentheses = (s) => {
+        const stack = [-1];
+        let maxLength = 0;
+
+        for (let i = 0; i < s.length; i++) {
+            if (s[i]==='(') {
+                stack.push(i)
+            } else {
+                if (stack.length) {
+                    maxLength = Math.max(maxLength, i - stack[stack.length-1]);
+                } else {
+                    stack.push(i);
+                }
+            }
+        }
+
+        return maxLength;
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+    const longestValidParentheses2  = (s) => {
+        const dp = new Array(s.length).fill(0);
+        let  max  = 0;
+        for (let i = 1; i < s.length; i++) {
+            if(s[i] === ')') {
+                if (s[i - 1] === '(') {
+                    dp[i] = (i >= 2 ? dp[i-2] : 0) + 2;
+                } else if (i - dp[i - 1] > 0 && s[i - dp[i - 1] -1] === '('){
+                    dp[i] = dp[i-1] + 2 + (i - dp[i-1] >= 2 ? dp[i - dp[i-1] - 2] : 0)
+                }
+                max = Math.max(max, dp[i])
+            }
+        }
+
+        return max
+    }
+\end{lstlisting}

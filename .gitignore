@@ -35,3 +35,4 @@ notes/*.fls
 notes/*.synctex.gz
 notes/*.fdb_latexmk
 notes/examination.tex
+notes/introduction.tex
