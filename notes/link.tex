@@ -30,3 +30,105 @@
         return dummyHead.next;
     };
 \end{lstlisting}
+
+\section{相交链表}
+\textbf{题目描述：}
+
+给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const getIntersectionNode = (headA, headB) => {
+        const visited = new Set();
+        let tempNode = headA;
+        while (tempNode) {
+            visited.add(tempNode);
+            tempNode = tempNode.next;
+        }
+
+        tempNode = headB;
+        while (tempNode) {
+            if (visited.has(tempNode)) {
+                return tempNode;
+            }
+            tempNode = tempNode.next;
+        }
+
+        return null;
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+    const getIntersectionNode2 = (headA, headB) =>{
+        if (!headA || !headB) {
+            return null;
+        }
+        
+        let ptrA = headA;
+        let ptrB = headB;
+        
+        while (ptrA !== ptrB) {
+            ptrA = ptrA ? ptrA.next : headB;
+            ptrB = ptrB ? ptrB.next : headA;
+        }
+        
+        return ptrA;
+    };
+\end{lstlisting}
+
+\section{反转链表}
+
+\textbf{题目描述：}
+
+给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const reverseList = (head) => {
+        let prev = null;
+        let curr = head;
+        
+        while(curr) {
+            let next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        
+        return prev;
+    };
+\end{lstlisting}
+
+\section{回文链表}
+\textbf{题目描述：}
+
+给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const isPalindrome = (head) => {
+        let vals = [];
+        while(head) {
+            vals.push(head.val);
+            head = head.next;
+        }
+
+        let left = 0, right = vals.length - 1;
+
+        while (left < right) {
+            if (vals[left] !== vals[right]) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+
+        return true;
+    };
+\end{lstlisting}
+

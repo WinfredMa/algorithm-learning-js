@@ -19,3 +19,29 @@ const setZeroes = (matrix) => {
         }
     }
 };
+
+const setZeroes2 = (matrix) => {
+    const m = matrix.length;
+    const n = matrix[0].length;
+    const ignoreRows = [];
+    const ignoreCols = []
+    for (let i = 0; i< m; i++) {
+        for (let j = 0; j < n; j++) {
+            if (matrix[i][j] === 0) {
+                ignoreRows.push(i);
+                ignoreCols.push(j);
+            }
+        }
+    }
+    for (let l = 0; l < ignoreRows.length; l++) {
+        for (let k = 0; k < n; k++) {
+            matrix[ignoreRows[l]][k] = 0;
+        }
+    }
+
+    for (let l = 0; l < ignoreCols.length; l++) {
+        for (let k = 0; k < m; k++) {
+            matrix[k][ignoreCols[l]] = 0;
+        }
+    }
+};
