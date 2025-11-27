@@ -147,3 +147,63 @@ const trap = (height) => {
     return result;
 };
 \end{lstlisting}
+
+\section{寻找重复数}
+
+\textbf{题目描述：}
+
+给定一个包含 n + 1 个整数的数组 nums ，其数字都在 [1, n] 范围内（包括 1 和 n），可知至少存在一个重复的整数。
+
+假设 nums 只有 一个重复的整数 ，返回 这个重复的数 。
+
+你设计的解决方案必须 不修改 数组 nums 且只用常量级 O(1) 的额外空间。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const findDuplicate = (nums) => {
+        let slow = nums[0];
+        let fast = nums[0];
+        do {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while( slow !== fast)
+    
+        slow = nums[0];
+    
+        while(slow !== fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+    
+        return slow
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+    const findDuplicate2 = (nums) => {
+        let left = 1;
+        let right = nums.length - 1;
+        
+        while (left < right) {
+            const mid = Math.floor((left + right) / 2);
+            let count = 0;
+            
+            for (let num of nums) {
+                if (num <= mid) {
+                    count++;
+                }
+            }
+            
+            if (count > mid) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        
+        return left;
+    }
+\end{lstlisting}
