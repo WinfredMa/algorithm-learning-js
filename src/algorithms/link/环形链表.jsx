@@ -1,17 +1,17 @@
 const hasCycle = (head) => {
+    let slowNode = head, fastNode = head;
+
     if (head === null || head.next === null) {
         return false;
     }
-    
-    let slowNode = head, fastNode = head.next;
 
-    while(slowNode !== fastNode) {
-        if (fastNode === null || fastNode.next === null) {
-            return false;
-        }
+    while(fastNode && fastNode.next) {
         slowNode = slowNode.next;
         fastNode = fastNode.next.next;
+        if (fastNode === slowNode) {
+            return true;
+        }
     }
     
-    return true;
+    return false;
 }
