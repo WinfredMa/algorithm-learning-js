@@ -199,3 +199,152 @@
     };
 \end{lstlisting}
 
+\section{合并两个有序链表}
+
+\textbf{题目描述：}
+
+将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const mergeTwoLists = (list1, list2) => {
+        if (!list1 || !list2) {
+            return list1 || list2;
+        }
+        let dummy = new ListNode(0, null);
+        let current = dummy;
+        while (list1 && list2) {
+            if (list1.val > list2.val) {
+                let temp = new ListNode(list2.val);
+                current.next = temp;
+                current = temp;
+                list2 = list2.next;
+            } else {
+                let temp = new ListNode(list1.val);
+                current.next = temp;
+                current = temp;
+                list1 = list1.next;
+            }
+        }
+        if (list1) {
+            current.next = list1;
+        } else {
+            current.next = list2;
+        }
+        
+        return dummy.next
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+    const mergeTwoLists2 = (list1, list2) => {
+        if (list1 === null) {
+            return list2;
+        } else if (list2 === null) {
+            return list1;
+        } else if (list1.val < list2.val) {
+            list1.next = mergeTwoLists2(list1.next, list2);
+            return list1;
+        } else {
+            list2.next = mergeTwoLists2(list1, list2.next);
+            return list2;
+        }
+    };
+\end{lstlisting}
+
+\textbf{解法三：}
+
+\begin{lstlisting}
+    const mergeTwoLists3 = (list1, list2) => {
+        const prehead = new ListNode(-1);
+        let prev = prehead;
+
+        while (list1 && list2) {
+            if (list1.val <= list2.val) {
+                prev.next = list1;
+                list1 = list1.next;
+            } else {
+                prev.next = list2;
+                list2 = list2.next;
+            }
+            prev = prev.next;
+        }
+        prev.next = list1 === null ? list2 : list1;
+        
+        return prehead.next;
+    };
+\end{lstlisting}
+
+\section{删除链表的倒数第 N 个结点}
+\textbf{题目描述：}
+
+给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const removeNthFromEnd = (head, n) => {
+        let dummy = new ListNode(0, head), fastNode = head,slowNode = dummy;
+
+        while (fastNode !== null) {
+            if (n <=0 ) {
+                slowNode = slowNode.next;
+            }
+            n--;
+            fastNode = fastNode.next;
+        }
+        slowNode.next = slowNode.next.next;
+        return dummy.next;
+    };
+\end{lstlisting}
+
+\section{两两交换链表中的节点}
+\textbf{题目描述：}
+
+给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const swapPairs = (head) => {
+        let curr = head;
+        let prev = null;
+        let newhead = null;
+        if (!curr?.next) {
+            return head;
+        }
+
+        while (curr?.next) {
+            let temp = curr.next.next;
+            if (prev) {
+                prev.next = curr.next;
+            }
+            if (!newhead) {
+                newhead = curr.next;
+            }
+            curr.next.next = curr;
+            curr.next = temp;
+            prev = curr;
+            curr = temp;
+        }
+        
+        return newhead
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+    const swapPairs2 = (head) => {
+        if (head === null || head.next === null) {
+            return head;
+        }
+        const newHead = head.next;
+        head.next = swapPairs(newHead.next);
+        newHead.next = head;
+        return newHead;
+    };
+\end{lstlisting}    
