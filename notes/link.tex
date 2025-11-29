@@ -347,4 +347,264 @@
         newHead.next = head;
         return newHead;
     };
-\end{lstlisting}    
+\end{lstlisting}
+
+\section{K个一组翻转链表}
+\textbf{题目描述：}
+
+给你链表的头节点 head ，每 k 个节点一组进行翻转，请你返回修改后的链表。
+
+k 是一个正整数，它的值小于或等于链表的长度。如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+
+你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const reverseKGroup = (head, k) => {
+        const reverseSubLink = (head, tail) => {
+            let previousNext = tail.next;
+            let p = head;
+            while (previousNext !== tail) {
+                const next = p.next;
+                p.next = previousNext;
+                previousNext = p;
+                p = next;
+            }
+            return [tail, head];
+        }
+        const dummy = new ListNode(0, head);
+        let pre = dummy;
+
+        while (head) {
+            let tail = pre;
+            for (let i = 0; i < k; i++) {
+                tail = tail.next;
+                if (!tail) {
+                    return dummy.next;
+                }
+            }
+
+            [head, tail] = reverseSubLink(head, tail);
+            pre.next = head;
+            pre = tail;
+            head = tail.next;
+        }
+        return dummy.next;
+    };
+\end{lstlisting}
+
+\section{随机链表的复制}
+\textbf{题目描述：}
+
+给你一个长度为 n 的链表，每个节点包含一个额外增加的随机指针 random ，该指针可以指向链表中的任何节点或空节点。
+
+构造这个链表的 深拷贝。 深拷贝应该正好由 n 个 全新 节点组成，其中每个新节点的值都设为其对应的原节点的值。新节点的 next 指针和 random 指针也都应指向复制链表中的新节点，并使原链表和复制链表中的这些指针能够表示相同的链表状态。复制链表中的指针都不应指向原链表中的节点 。
+
+例如，如果原链表中有 X 和 Y 两个节点，其中 X.random --> Y 。那么在复制链表中对应的两个节点 x 和 y ，同样有 x.random --> y 。
+
+返回复制链表的头节点。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const copyRandomList = (head) => {
+        if (!head) {
+            return null;
+        }
+        
+        const map = new Map();
+        let current = head;
+        
+        while (current) {
+            map.set(current, new Node(current.val));
+            current = current.next;
+        }
+        
+        current = head;
+        while (current) {
+            // Key logics
+            const newNode = map.get(current);
+            newNode.next = map.get(current.next) || null;
+            newNode.random = map.get(current.random) || null;
+            current = current.next;
+        }
+        
+        return map.get(head);
+    };
+\end{lstlisting}
+
+\textcolor{red}{*体会map在该场景下的用法}
+
+\section{排序链表}
+\textbf{题目描述：}
+
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const sortList = (head) => {
+        let prev = null, slow = head, fast = head;
+        const merge = (link1, link2) => {
+            let dummy = new ListNode(0, null);
+            let curr = dummy;
+            while (link1 && link2) {
+                if (link1.val >= link2.val) {
+                    curr.next = link2;
+                    link2 = link2.next;
+                } else {
+                    curr.next = link1;
+                    link1 = link1.next;
+                }
+                curr = curr.next;
+            }
+
+            curr.next = link1 || link2;
+
+            return dummy.next;
+        }
+
+        if (!head || !head.next) {
+            return head;
+        }
+
+        while (fast && fast.next) {
+            prev = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        prev.next = null;
+
+        return merge(sortList(head), sortList(slow))
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+    const sortList2 = (head) => {
+        const mergeLink = (link1, link2) => {
+            const dummy = new ListNode(0);
+            let current = dummy
+
+            while(link1 !== null && link2 !== null) {
+                if (link1.val <= link2.val) {
+                    current.next = link1;
+                    link1 = link1.next;
+                } else {
+                    current.next = link2;
+                    link2 = link2.next;
+                }
+                current = current.next;
+            }
+            current.next = link1 || link2;
+
+            return dummy.next;
+        }
+
+        const toSortList = (head, tail) => {
+            if (head === null) {
+                return head;
+            }
+            if (head.next === tail) {
+                head.next = null;
+                return head;
+            }
+
+            let slow = head, fast = head;
+            while (fast !== tail) {
+                slow = slow.next;
+                fast = fast.next;
+
+                if (fast !== tail) {
+                    fast = fast.next;
+                }
+            }
+            const mid = slow;
+            return mergeLink(toSortList(head, mid), toSortList(mid, tail));
+        };
+        
+        return toSortList(head, null);
+    }
+\end{lstlisting}
+
+\section{合并K个升序链表}
+\textbf{题目描述：}
+
+给你一个链表数组，每个链表都已经按升序排列。
+
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const mergeKLists = (lists) => {
+        let dummy = new ListNode(0)
+        let link1 = lists[0];
+        let curr = dummy;
+        if (lists.length === 1) {
+            return lists[0];
+        }
+        
+        for (let i = 1; i < lists.length; i++) {
+            let link2 = lists[i];
+            while (link1 && link2) {
+                if (link1.val > link2.val) {
+                    curr.next = link2;
+                    link2 = link2.next;
+                } else {
+                    curr.next = link1;
+                    link1 = link1.next;
+                }
+                curr = curr.next;
+            }
+            curr.next = link1 || link2;
+
+            link1 = dummy.next;
+            curr = dummy;
+        }
+
+        return dummy.next;
+    };
+\end{lstlisting}
+
+\section{LRU 缓存}
+\textbf{题目描述：}
+
+请你设计并实现一个满足 LRU (最近最少使用) 缓存 约束的数据结构。实现 LRUCache 类:
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const LRUCache = (capacity) => {
+        this.capacity = capacity;
+        this.map = new Map();
+    };
+
+    LRUCache.prototype.get = (key) => {
+        if (this.map.has(key)) {
+            const val = this.map.get(key);
+            this.map.delete(key);
+            this.map.set(key, val);
+            return val
+        }
+        return -1;
+    };
+
+    LRUCache.prototype.put = (key, value) => {
+        const item = this.map.get(key);
+        if (item) {
+            this.map.delete(key);
+        } else {
+            // this.map.keys().next().value
+            if (this.capacity === this.map.size) {
+                this.map.delete(this.map.keys().next().value);
+            }
+        }
+        this.map.set(key, value);
+    };
+\end{lstlisting}
+
+\textcolor{red}{*体会map在该场景下的用法}
