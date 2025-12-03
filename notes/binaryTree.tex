@@ -1,0 +1,744 @@
+\part{树}
+\section{二叉树的中序遍历}
+
+\textbf{题目描述：}
+
+给定一个二叉树的根节点 root ，返回 它的 中序 遍历 。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const inorderTraversal = (root) => {
+        const result = [];
+        const goThrough = (node) => {
+            if (!node) {
+                return;
+            }
+            goThrough(node.left);
+            result.push(node.val);
+            goThrough(node.right);
+        }
+        goThrough(root)
+
+        return result;
+    }
+\end{lstlisting}
+
+\textbf{解法二}
+\begin{lstlisting}
+    const inorderTraversal = (root) => {
+        const result = [];
+        const stack = [];
+        while (root || stack.length) {
+            while (root) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            result.push(root.val);
+            root = root.right;
+        }
+        
+        return result;
+    };
+\end{lstlisting}
+
+\section{二叉树的最大深度}
+
+\textbf{题目描述：}
+给定一个二叉树 root ，返回其最大深度。
+
+二叉树的 最大深度 是指从根节点到最远叶子节点的最长路径上的节点数。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const maxDepth = (root) => {
+        let goThrough = (node) => {
+            if (!node) {
+                return 0;
+            } else {
+                const leftHeight = goThrough(node.left);
+                const rightHeight = goThrough(node.right);
+                return Math.max(leftHeight, rightHeight) + 1;
+            }
+        }
+        
+        return goThrough(root);
+    }
+\end{lstlisting}
+
+\textbf{解法二：}
+\begin{lstlisting}
+    const maxDepth = (root) => {
+        if (!root) {
+            return 0;
+        }
+        
+        const queue = [root];
+        let ans = 0;
+        
+        while (queue.length > 0) {
+            const size = queue.length;
+            
+            for (let i = 0; i < size; i++) {
+                const node = queue.shift();
+                
+                if (node.left) {
+                    queue.push(node.left);
+                }
+                if (node.right) {
+                    queue.push(node.right);
+                }
+            }
+            ans++;
+        }
+        
+        return ans;
+    };
+\end{lstlisting}
+
+\section{翻转二叉树}
+
+\textbf{题目描述：}
+给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const invertTree = (root) => {
+        const goThrough = (node) => {
+            if (!node) {
+                return node;
+            }
+            let leftNode = node.left;
+            let rightNode = node.right;
+            node.left = rightNode;
+            node.right = leftNode;
+            if (leftNode) {
+                goThrough(leftNode);
+            }
+            if (rightNode) {
+                goThrough(rightNode);
+            }
+        }
+        goThrough(root);
+
+        return root;
+    };
+\end{lstlisting}
+
+\section{对称二叉树}
+
+\textbf{题目描述：}
+给你一个二叉树的根节点 root ， 检查它是否轴对称。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const isSymmetric = (root) => {
+        if (!root) {
+            return true;
+        }
+        return recur(root.left, root.right);
+        function recur(left, right) {
+            if (!left && !right) {
+                return true;
+            }
+            if (!left || !right || left.val !== right.val) {
+                return false;
+            }
+            return recur(left.left, right.right) && recur(left.right, right.left);
+        }
+    }
+\end{lstlisting}
+
+\textbf{解法二：}
+\begin{lstlisting}
+    const isSymmetric = (root) => {
+        if (!root) {
+            return true;
+        }
+        
+        const queue = [root.left, root.right];
+        while (queue.length) {
+            const left = queue.shift();
+            const right = queue.shift();
+            if (!left && !right) {
+                continue;
+            }
+            if (!left || !right || left.val !== right.val) {
+                return false;
+            }
+            queue.push(left.left, right.right);
+            queue.push(left.right, right.left);
+        }
+        
+        return true;
+    }
+\end{lstlisting}
+
+\section{二叉树的直径}
+
+\textbf{题目描述：}
+给你一棵二叉树的根节点，返回该树的 直径 。
+
+二叉树的 直径 是指树中任意两个节点之间最长路径的 长度 。这条路径可能经过也可能不经过根节点 root 。
+
+两节点之间路径的 长度 由它们之间边数表示。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const diameterOfBinaryTree = (root) => {
+        let result = 0;
+        const getDepth = (node) => {
+            if (!node) {
+                return 0;
+            }
+            let leftDepth = getDepth(node.left);
+            let rightDepth = getDepth(node.right);
+            result = Math.max(result, leftDepth + rightDepth);
+            return Math.max(leftDepth, rightDepth) + 1;
+        };
+        getDepth(root);
+        
+        return result;
+    };
+\end{lstlisting}
+
+\section{二叉树的层序遍历}
+
+\textbf{题目描述：}
+给你二叉树的根节点 root ，返回其节点值的 层序遍历 。 （即逐层地，从左到右访问所有节点）。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    levelOrder = function(root) {
+        let result = [];
+    
+        if (!root) {
+            return result;
+        }
+        const queue = [root]
+        while (queue.length) {
+            const nodesAtLevel = queue.length;
+            result.push([]);
+            for (let i = 0; i < nodesAtLevel; i++) {
+                const node = queue.shift();
+                result[result.length -1].push(node.val);
+                if (node.left) {
+                    queue.push(node.left);
+                }
+                if (node.right) {
+                    queue.push(node.right);
+                }
+            }
+        }
+    
+        return result;
+    };
+\end{lstlisting}
+
+\section{将有序数组转换为二叉搜索树}
+
+\textbf{题目描述：}
+
+给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 平衡 二叉搜索树。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const sortedArrayToBST = (nums) => {
+        const assistFunc = (nums, leftIndex, rightIndex) => {
+            if (leftIndex > rightIndex) {
+                return null;
+            }
+            const midIndex = Math.floor((leftIndex + rightIndex) / 2);
+            const root = new TreeNode(nums[midIndex], null, null);
+            root.left = assistFunc(nums, leftIndex, midIndex -1);
+            root.right = assistFunc(nums, midIndex + 1, rightIndex);
+
+            return root;
+        }
+    
+        return assistFunc(nums, 0, nums.length -1);
+    };
+\end{lstlisting}
+
+\section{验证二叉搜索树}
+
+\textbf{题目描述：}
+给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。
+
+有效 二叉搜索树定义如下：
+
+节点的左子树只包含 严格小于 当前节点的数。
+
+节点的右子树只包含 严格大于 当前节点的数。
+
+所有左子树和右子树自身必须也是二叉搜索树。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const isValidBST = (root) => {
+        const check = (node, min, max) => {
+            if (!node) {
+                return true;
+            }
+    
+            if (min >= node.val || max <= node.val) {
+                return false;
+            }
+    
+            return check(node.left, min, node.val) && check(node.right, node.val, max);
+        }
+        
+        return check(root, -Infinity, Infinity);
+    };
+\end{lstlisting}
+
+\section{二叉搜索树中第 K 小的元素}
+
+\textbf{题目描述：}
+给定一个二叉搜索树的根节点 root ，和一个整数 k ，请你设计一个算法查找其中第 k 小的元素（从 1 开始计数）。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const kthSmallest = (root, k) => {
+        let vals = [];
+        const collectVals = (node) => {
+            if (!node) {
+                return
+            }
+            vals.push(node.val);
+            collectVals(node.left);
+            collectVals(node.right);
+        }
+    
+        collectVals(root);
+        
+        return vals.sort((a, b) => a - b)[k -1];
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+    const kthSmallest = (root, k) => {
+        const stack = [];
+    
+        while (root !== null || stack.length) {
+            while (root !== null) {
+                stack.push(root);
+                root = root.left
+            }
+            root = stack.pop();
+            k--;
+            if (k === 0) {
+                break;
+            }
+            root = root.right;
+        }
+    
+        return root.val;
+    };
+\end{lstlisting}
+
+\section{二叉树的右视图}
+
+\textbf{题目描述：}
+给定一个二叉树的 根节点 root，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+\textbf{解法一：}
+
+\begin{lstlisting}
+    const rightSideView = (root) => {
+        let result = [];
+        let queue = [];
+        if (!root) {
+            return result;
+        }
+        queue=[root];
+        
+        while(queue.length) {
+            const items = queue.length;//This is key item.
+            for (let i = 0; i < items; i++) {
+                let node = queue.shift();
+                if (i == items -1) {
+                    result.push(node.val);
+                }
+                if (node.left) {
+                    queue.push(node.left);
+                }
+                if (node.right) {
+                    queue.push(node.right);
+                }
+            }
+        }
+        
+        return result;
+    };
+\end{lstlisting}
+
+\section{二叉树展开为链表}
+
+\textbf{题目描述：}
+给你二叉树的根结点 root ，请你将它展开为一个单链表：
+
+展开后的单链表应该同样使用 TreeNode ，其中 right 子指针指向链表中下一个结点，而左子指针始终为 null 。
+展开后的单链表应该与二叉树 先序遍历 顺序相同。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const flatten = (root) => {
+        const preorderTraversal = (root, list) => {
+            if (root) {
+              list.push(root);
+              preorderTraversal(root.left, list);
+              preorderTraversal(root.right, list);
+            }
+        }
+    
+        const list = [];
+        preorderTraversal(root, list);
+        const totalNodes = list.length;
+    
+        for (let i = 1; i < totalNodes; i++) {
+            list[i -1].left = null;
+            list[i -1].right = list[i];
+        }
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+
+\begin{lstlisting}
+    const flatten2 = (root) => {
+        if (root === null) {
+            return;
+        }
+        const stack = [];
+        stack.push(root);
+        let prev = null;
+        while (stack.length) {
+            const curr = stack.pop();
+            if (prev !== null) {
+                prev.left = null;
+                prev.right = curr;
+            }
+            const left = curr.left, right = curr.right;
+            if (right !== null) {
+                stack.push(right);
+            }
+            if (left !== null) {
+                stack.push(left);
+            }
+            prev = curr;
+        }
+    };
+\end{lstlisting}
+
+\section{从前序与中序遍历序列构造二叉树}
+
+\textbf{题目描述：}
+
+给定两个整数数组 preorder 和 inorder ，其中 preorder 是二叉树的先序遍历， inorder 是同一棵树的中序遍历，请构造二叉树并返回其根节点。
+
+概念：先序遍历是先遍历根节点，然后遍历左子树，最后遍历右子树。中序遍历是遍历左子树，然后遍历根节点，最后遍历右子树。后序遍历是遍历左子树，然后遍历右子树，最后遍历根节点。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const buildTree = function(preorder, inorder) {
+        const inorderMap = new Map();
+
+        for (let i = 0; i < inorder.length; i++) {
+            inorderMap.set(inorder[i], i);
+        }
+
+        const build = (preStart, preEnd, inorderStart, inorderEnd) => {
+            if (preStart > preEnd) {
+                return null;
+            }
+
+            const rootVal = preorder[preStart];
+            const rootIndex = inorderMap.get(rootVal);
+            const root = new TreeNode(rootVal);
+            const leftSize = rootIndex - inorderStart;
+
+            // left subtree's preorder range: preStart+1 to preStart+leftSize
+            // left subtree's inorder range: inStart to rootIndex-1
+            root.left = build(
+                preStart + 1,
+                preStart + leftSize,
+                inorderStart,
+                rootIndex -1);
+
+            // right subtree's preorder range: preStart+leftSize+1 to preEnd
+            // right subtree's inorder range: rootIndex+1 to inEnd
+            root.right = build(
+                preStart + leftSize + 1, 
+                preEnd, 
+                rootIndex + 1, 
+                inorderEnd);
+
+            return root;
+        }
+        
+        return build(0, preorder.length - 1, 0, inorder.length - 1);
+    };
+\end{lstlisting}
+
+\textbf{解法二：}
+\begin{lstlisting}
+    const buildTree2 = (preorder, inorder) => {
+        const inorderMap = new Map();
+        for (let i = 0; i < inorder.length; i++) {
+            inorderMap.set(inorder[i], i);
+        }
+        let preRootIndex = 0;
+
+        const build = (inorderStar, inorderEnd) => {
+            if (inorderStar > inorderEnd) {
+                return null;
+            }
+            const node = new TreeNode(preorder[preRootIndex]);
+            const inorderRootIndex = inorderMap.get(preorder[preRootIndex]);
+            preRootIndex++
+            node.left = build(inorderStar, inorderRootIndex - 1);
+            node.right = build(inorderRootIndex + 1, inorderEnd);
+            return node;
+        }
+
+        return build(0, inorder.length -1)
+    };
+\end{lstlisting}
+
+\textbf{解法三：}
+\begin{lstlisting}
+    const buildTree = function(preorder, inorder) {
+        if (!preorder || preorder.length === 0) {
+            return null;
+        }
+
+        const stack = [];
+        const root = new TreeNode(preorder[0]);
+        stack.push(root);
+
+        let inorderIndex = 0;
+
+        for (let i = 1; i < preorder.length; i++) {
+            let node = stack[stack.length - 1];
+
+            if (node.val !== inorder[inorderIndex]) {
+                node.left = new TreeNode(preorder[i]);
+                stack.push(node.left);
+            } else {
+                // node.val === inorder[inorderIndex] means that the left subtree is complete. 
+                while (stack.length > 0 && stack[stack.length - 1].val === inorder[inorderIndex]) {
+                    node = stack.pop();
+                    inorderIndex++;
+                }
+                node.right = new TreeNode(preorder[i]);
+                stack.push(node.right);
+            }
+        }
+
+        return root;
+    };
+\end{lstlisting}
+
+\section{路径总和 III}
+
+\textbf{题目描述：}
+给定一个二叉树的根节点 root ，和一个整数 targetSum ，求该二叉树里节点值之和等于 targetSum 的 路径 的数目。
+
+路径 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const pathSum = function(root, targetSum) {
+        if (root === null) {
+            return 0;
+        }
+    
+        let result = rootSum(root, targetSum); // count the root itself
+        result += pathSum(root.left, targetSum); // count the left subtree
+        result += pathSum(root.right, targetSum);
+    
+        return result;
+    };
+    
+    const rootSum = (root, targetSum) => {
+        let result = 0;
+    
+        if (root === null) {
+            return 0;
+        }
+    
+        const val = root.val;
+    
+        if (val === targetSum) {
+            result ++;
+        }
+    
+        result += rootSum(root.left, targetSum - val);
+        result += rootSum(root.right, targetSum - val);
+    
+        return result;
+    }
+\end{lstlisting}
+
+\textbf{解法二：}
+\begin{lstlisting}
+    const pathSum = (root, targetSum) => {
+        const prefix = new Map();
+        prefix.set(0, 1);
+        return dfs(root, prefix, 0, targetSum);
+    }
+
+    const dfs = (root, prefix, sum, targetSum) => {
+        if (!root) {
+            return 0;
+        }
+        sum += root.val;
+        let res = prefix.get(sum - targetSum) || 0;
+        prefix.set(sum, (prefix.get(sum) || 0) + 1);
+        res += dfs(root.left, prefix, sum, targetSum);
+        res += dfs(root.right, prefix, sum, targetSum);
+        prefix.set(sum, prefix.get(sum) - 1);
+        return res;
+    }
+    
+\end{lstlisting}
+
+
+\section{二叉树的最近公共祖先}
+
+\textbf{题目描述：}
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const lowestCommonAncestor = (root, p, q) => {
+        
+        if (!root || root === p || root === q) {
+            return root;
+        }
+        const leftChild = lowestCommonAncestor(root.left, p, q);
+        const rightChild = lowestCommonAncestor(root.right, p, q);
+
+        if (leftChild && rightChild) {
+            return root;
+        }
+
+        return leftChild || rightChild;
+    }
+
+\end{lstlisting}
+
+\textbf{解法二：}
+\begin{lstlisting}
+    let parentMap = new Map();
+    let visitedVal = new Set();
+
+    const dfs = (root) => {
+        if (root.left !== null) {
+            parentMap.set(root.left.val, root);
+            dfs(root.left);
+        }
+
+        if (root.right !== null) {
+            parentMap.set(root.right.val, root);
+            dfs(root.right);
+        }
+    }
+    dfs(root);
+
+    while (p) {
+        visitedVal.add(p.val);
+        p = parentMap.get(p.val);
+    }
+
+    while (q) {
+        if (visitedVal.has(q.val)) {
+            return q;
+        }
+        q = parentMap.get(q.val);
+    }
+
+    return null;
+\end{lstlisting}
+
+\textbf{解法三：}
+\begin{lstlisting}
+    const lowestCommonAncestor = (root, p, q) => {
+        const findPath = (node, target, path) => {
+            if (!node) return false;
+            
+            path.push(node);
+            
+            if (node === target) {
+                return true;
+            }
+            
+            if (findPath(node.left, target, path)) {
+                return true;
+            }
+            
+            if (findPath(node.right, target, path)) {
+                return true;
+            }
+            
+            path.pop(); //This is very important. backtrack.
+            return false;
+        };
+        
+        const pathP = [];
+        const pathQ = [];
+        
+        findPath(root, p, pathP);
+        findPath(root, q, pathQ);
+        
+        let lca = null;
+        const len = Math.min(pathP.length, pathQ.length);
+        
+        for (let i = 0; i < len; i++) {
+            if (pathP[i] === pathQ[i]) {
+                lca = pathP[i];
+            } else {
+                break;
+            }
+        }
+        
+        return lca;
+    }
+\end{lstlisting}
+
+
+\section{二叉树中的最大路径和}
+\textbf{题目描述：}
+
+二叉树中的 路径 被定义为一条节点序列，序列中每对相邻节点之间都存在一条边。同一个节点在一条路径序列中 至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。
+路径和 是路径中各节点值的总和。
+给你一个二叉树的根节点 root ，返回其 最大路径和。
+
+\textbf{解法一：}
+\begin{lstlisting}
+    const maxPathSum = (root) => {
+        let maxSum = -Infinity;
+    
+        const dfs = (node) => {
+            if (!node) {
+                return 0;
+            }
+            const leftGain = Math.max(dfs(node.left), 0);
+            const rightGain = Math.max(dfs(node.right), 0);
+            const currentGain = node.val + leftGain + rightGain;
+            maxSum = Math.max(maxSum, currentGain);
+    
+            return Math.max(leftGain, rightGain) + node.val;
+        }
+    
+        dfs(root);
+    
+        return maxSum
+    };
+\end{lstlisting}
